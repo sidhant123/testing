@@ -9,8 +9,7 @@ class MicroBlogger
 		puts "initializing Microblogger"
 		@client=JumpstartAuth.twitter
 		Klout.api_key = 'xu9ztgnacmjx3bu82warbr3h'
-		
-
+		@bitly=Bitly.new('hungryacademy', 'R_430e9f62250186d2612cca76eee2dbc6')
 	end
 
 	def tweet(message)
@@ -29,6 +28,22 @@ class MicroBlogger
 		end
 
 	end
+
+	#begin def follower_list
+		#screen_names=[]
+		##follower.each do |f| 
+		#screen_names<<f["screen_name"]
+	#end
+		 #screen_names
+	#end
+
+	#def spam_my_friends(message)
+		#screen_names=follower_list
+		#screen_name.each do |follower|
+		#dm(follower,message)
+		#end
+	#end
+	#end 
 
 	def klout_score
 		friends=@client.friends.collect{|friend| @client.user(friend).screen_name}
@@ -52,8 +67,9 @@ class MicroBlogger
 	end
 
 	def shorten(original_url)
-		bitly=Bitly.new('hungryacademy', 'R_430e9f62250186d2612cca76eee2dbc6')
-		return bitly.shorten(original_url).short_url
+		Bitly.use_api_version_3
+		short_url=@bitly.shorten(original_url).short_url
+		puts short_url
 	end
 
 	def run
@@ -69,7 +85,9 @@ class MicroBlogger
 	 	when 't' then tweet(parts[1..-1].join(" "))
 	 	when 'dm' then dm(parts[1],parts[2..-1].join(" "))
 	 	when 'elt' then everyones_last_tweet
-	 	when 's' then shorten(parts[1..-1])
+	 	when 'spam' then spam_my_friends(parts[1..-1].join(" "))
+	 	when 's' then shorten(parts[1])
+	 	when 'k'then klout_score	
 	 	else
 	 		puts"Sorry ,I dont know know how #{command}"
 	 	end
@@ -79,5 +97,5 @@ class MicroBlogger
 end
 blogger=MicroBlogger.new
 blogger.run
-blogger.klout_score
+
 end
